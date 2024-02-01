@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+permissions:
+        contents: write
+        
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.4'
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v4
+
+    - name: Get dependencies
+      run: go get -v -t -d ./...
+
+    - name: Test
+      run: go test -v .
+
+    - name: Create release directory
+      run: mkdir ${{ github.workspace }}/release
+     
+    - name: Build Windows
+      run: GOOS=windows GOARCH=amd64 go build -v -o ${{ github.workspace }}/release/timeapi.exe .
+
+    - name: Build Linux
+      run: GOOS=linux GOARCH=amd64 go build -v -o ${{ github.workspace }}/release/timeapi-linux .
+      
+    - name: Build macOS amd64
+      run: GOOS=darwin GOARCH=amd64 go build -v -o ${{ github.workspace }}/release/timeapi-mac-amd64 .
+
+    - name: Build macOS arm64
+      run: GOOS=darwin GOARCH=arm64 go build -v -o ${{ github.workspace }}/release/timeapi-mac-arm64 .
+
+    - name: Generate checksums
+      run: |
+        sha256sum ${{ github.workspace }}/release/timeapi.exe > ${{ github.workspace }}/release/timeapi-win.sha256
+        sha256sum ${{ github.workspace }}/release/timeapi-linux > ${{ github.workspace }}/release/timeapi-linux.sha256
+        sha256sum ${{ github.workspace }}/release/timeapi-mac-amd64 > ${{ github.workspace }}/release/timeapi-mac-amd64.sha256
+        sha256sum ${{ github.workspace }}/release/timeapi-mac-arm64 >  ${{ github.workspace }}/release/timeapi-mac-arm64.sha256
+    
+    - name: List Assets
+      run: |
+        ls ${{ github.workspace }}/release/
+
+    - name: Upload Release
+      uses: SierraSoftworks/gh-releases@v1.0.7
+      with:
+        token: ${{ github.token }}
+        overwrite: 'true'
+        files: |
+          ${{ github.workspace }}/release/timeapi-linux
+          ${{ github.workspace }}/release/timeapi-linux.sha256
+          ${{ github.workspace }}/release/timeapi-mac-amd64
+          ${{ github.workspace }}/release/timeapi-mac-amd64.sha256
+          ${{ github.workspace }}/release/timeapi-mac-arm64
+          ${{ github.workspace }}/release/timeapi-mac-arm64.sha256
+          ${{ github.workspace }}/release/timeapi-win.sha256
+          ${{ github.workspace }}/release/timeapi.exe

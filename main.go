@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"time-go/internal/timeapi" // Assuming the package is in a directory named pkg
+	"time-go/internal/timeapi"
 )
 
 func main() {
