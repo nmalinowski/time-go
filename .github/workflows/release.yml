@@ -10,13 +10,13 @@ permissions:
         
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.21.4'
+        go-version: '1.21'
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v4
@@ -31,23 +31,35 @@ jobs:
       run: mkdir ${{ github.workspace }}/release
      
     - name: Build Windows
-      run: GOOS=windows GOARCH=amd64 go build -v -o ${{ github.workspace }}/release/timeapi.exe .
+      run: |
+        $env:GOOS = "windows"
+        $env:GOARCH = "amd64"
+        go build -v -o ${{ github.workspace }}/release/timeapi.exe .
 
     - name: Build Linux
-      run: GOOS=linux GOARCH=amd64 go build -v -o ${{ github.workspace }}/release/timeapi-linux .
+      run: |
+        $env:GOOS = "linux"
+        $env:GOARCH = "amd64"
+        go build -v -o ${{ github.workspace }}/release/timeapi-linux .
       
     - name: Build macOS amd64
-      run: GOOS=darwin GOARCH=amd64 go build -v -o ${{ github.workspace }}/release/timeapi-mac-amd64 .
+      run: |
+        $env:GOOS = "darwin"
+        $env:GOARCH = "amd64"
+        go build -v -o ${{ github.workspace }}/release/timeapi-mac-amd64 .
 
     - name: Build macOS arm64
-      run: GOOS=darwin GOARCH=arm64 go build -v -o ${{ github.workspace }}/release/timeapi-mac-arm64 .
+      run: |
+        $env:GOOS = "darwin"
+        $env:GOARCH = "arm64"
+        go build -v -o ${{ github.workspace }}/release/timeapi-mac-arm64 .
 
     - name: Generate checksums
       run: |
-        sha256sum ${{ github.workspace }}/release/timeapi.exe > ${{ github.workspace }}/release/timeapi-win.sha256
-        sha256sum ${{ github.workspace }}/release/timeapi-linux > ${{ github.workspace }}/release/timeapi-linux.sha256
-        sha256sum ${{ github.workspace }}/release/timeapi-mac-amd64 > ${{ github.workspace }}/release/timeapi-mac-amd64.sha256
-        sha256sum ${{ github.workspace }}/release/timeapi-mac-arm64 >  ${{ github.workspace }}/release/timeapi-mac-arm64.sha256
+        Get-FileHash ${{ github.workspace }}/release/timeapi.exe | Select-Object Hash, Algorithm > ${{ github.workspace }}/release/timeapi-win.sha256
+        Get-FileHash ${{ github.workspace }}/release/timeapi-linux | Select-Object Hash, Algorithm > ${{ github.workspace }}/release/timeapi-linux.sha256
+        Get-FileHash ${{ github.workspace }}/release/timeapi-mac-amd64 | Select-Object Hash, Algorithm > ${{ github.workspace }}/release/timeapi-mac-amd64.sha256
+        Get-FileHash ${{ github.workspace }}/release/timeapi-mac-arm64 | Select-Object Hash, Algorithm >  ${{ github.workspace }}/release/timeapi-mac-arm64.sha256
     
     - name: List Assets
       run: |

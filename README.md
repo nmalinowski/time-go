@@ -1,4 +1,6 @@
 [![Go](https://github.com/nmalinowski/time-go/actions/workflows/go.yml/badge.svg)](https://github.com/nmalinowski/time-go/actions/workflows/go.yml)
+[![Release](https://github.com/nmalinowski/time-go/actions/workflows/release.yml/badge.svg)](https://github.com/nmalinowski/time-go/actions/workflows/release.yml)
+
 # time-go API
 
 This is a simple API written in Go that allows you to fetch the current time in any timezone.
