@@ -43,8 +43,9 @@ If there's an error, the response will have an `error` field:
 1. Make sure you have Go installed on your machine.
 2. Clone this repository.
 3. Navigate to the project directory.
-4. Run `go run main.go` to start the server.
-5. The server will be running on `http://localhost:8080`.
+4. Set `CERT_FILE_PATH` and `KEY_FILE_PATH` in your environment variables.
+5. Run `go run main.go` to start the server.
+6. The server will be running on `http://localhost:8080`.
 
 ## Contributing
 
