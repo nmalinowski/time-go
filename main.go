@@ -13,6 +13,11 @@ func main() {
 	certFilePath := os.Getenv("CERT_FILE_PATH")
 	keyFilePath := os.Getenv("KEY_FILE_PATH")
 
-	err := http.ListenAndServeTLS(":8080", certFilePath, keyFilePath, nil)
+	var err error
+	if certFilePath == "" || keyFilePath == "" {
+		err = http.ListenAndServe(":8080", nil)
+	} else {
+		err = http.ListenAndServeTLS(":8080", certFilePath, keyFilePath, nil)
+	}
 	log.Fatal(err)
 }
